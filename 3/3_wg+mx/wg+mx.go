@@ -6,11 +6,20 @@ import (
 	"sync"
 )
 
+/*
+Дана последовательность чисел: 2,4,6,8,10. Найти сумму их
+квадратов(2^2+3^2+4^2….) с использованием конкурентных вычислений.
+*/
+
 var (
 	OUT  = os.Stdout
 	DATA = []int{2, 4, 6, 8, 10}
 	SUM  = 0
 )
+
+/*
+Варианты 3.1 и 3.2 - с использованием sync.WaitGroup и sync.Mutex. Различия в области видимости переменной sum
+*/
 
 // gettingSquareWGMxGlobal считает квадрат числа и суммирует с глобальной переменной SUM
 func gettingSquareWGMxGlobal(num int, wg *sync.WaitGroup, mx *sync.Mutex) {
@@ -26,15 +35,6 @@ func gettingSquareWGMxLocal(num int, sum *int, wg *sync.WaitGroup, mx *sync.Mute
 	mx.Lock()
 	defer mx.Unlock()
 	*sum += num * num
-}
-
-/*
-gettingSquareChan считает квадрат числа и помещает его в канал squares,
-после чего отчитывается о выполнении в канал isCompleted
-*/
-func gettingSquareChan(num int, squares chan<- int, isCompleted chan<- struct{}) {
-	squares <- num * num
-	isCompleted <- struct{}{}
 }
 
 func main() {
@@ -62,35 +62,4 @@ func main() {
 		wg.Wait()
 		fmt.Fprintf(OUT, "[WGG] %d\n", SUM)
 	}
-
-	//через каналы
-	{
-		squares := make(chan int, len(DATA))
-		sum := 0
-
-		// откидываем писателя в отдельую горутину
-		go func() {
-			defer close(squares)
-			// isCompleted - канал, который служит для гарантии, что все горутиный gettingSquareChan завершили работу
-			isCompleted := make(chan struct{}, len(DATA))
-			defer close(isCompleted)
-
-			for _, v := range DATA {
-				go gettingSquareChan(v, squares, isCompleted)
-			}
-
-			// дожидаемся выполнения всех горутин gettingSquareChan
-			for i := 0; i < len(DATA); i++ {
-				<-isCompleted
-			}
-
-		}()
-
-		for sq := range squares {
-			sum += sq
-		}
-
-		fmt.Fprintf(OUT, "[Chan] %d\n", sum)
-	}
-
 }

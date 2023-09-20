@@ -6,6 +6,12 @@ import (
 	"log"
 )
 
+/*
+Дана структура Human (с произвольным набором полей и методов).
+Реализовать встраивание методов в структуре Action от родительской структуры
+Human (аналог наследования).
+*/
+
 var (
 	invalidAge  = errors.New("age cannot be negative")
 	invalidName = errors.New("name cannot be empty")
