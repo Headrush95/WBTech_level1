@@ -7,6 +7,10 @@ import "fmt"
 переменной: int, string, bool, channel из переменной типа interface{}.
 */
 
+/*
+Вариант 1 - исползуя конструкцию switch
+*/
+
 func checkType(value any) {
 	switch value.(type) {
 	case int:
