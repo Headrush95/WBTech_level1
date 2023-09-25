@@ -20,7 +20,7 @@ var (
 func mult(in <-chan int, out chan<- int) {
 	defer close(out)
 	for num := range in {
-		fmt.Fprintf(OUT, "[Mult] Get %d, sent %d\n", num, num*2)
+		//fmt.Fprintf(OUT, "[Mult] Get %d, sent %d\n", num, num*2)
 		out <- num * 2
 	}
 }
@@ -29,7 +29,7 @@ func mult(in <-chan int, out chan<- int) {
 func reader(nums []int, out chan<- int) {
 	defer close(out)
 	for num := range nums {
-		fmt.Fprintf(OUT, "[Reader] got %d\n", num)
+		//fmt.Fprintf(OUT, "[Reader] got %d\n", num)
 		out <- num
 	}
 }
